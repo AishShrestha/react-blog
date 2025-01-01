@@ -33,6 +33,13 @@ class FileService {
 
         }
     }
+
+    getFilePreview(fileId){
+        return this.bucket.getFilePreview(
+            config.appwrite.appwriteBucketId,
+            fileId
+        )
+    }
 }
 
 const fileService = new FileService();
