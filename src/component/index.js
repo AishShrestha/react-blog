@@ -6,5 +6,24 @@ import Button from "./Button";
 import Signup from "./Signup";
 import RTE from "./RTE";
 import Select from "./Select";
+import AuthLayout from "./AuthLayout";
+import Login from "./Login";
+import Logo from "./Logo";
+import Postcard from "./Postcard";
+import Postform from "./Postform/PostForm";
 
-export { Header, Footer, Container, Input, Button, Signup, RTE, Select };
+export {
+  Header,
+  Footer,
+  Container,
+  Input,
+  Button,
+  Signup,
+  RTE,
+  Select,
+  AuthLayout,
+  Login,
+  Logo,
+  Postcard,
+  Postform,
+};
