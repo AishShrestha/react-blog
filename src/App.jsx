@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import { Header, Footer } from "./component";
 import { login, logout } from "./feature/authSlice";
 import authService from "./appwrite/auth";
-import backgroundImage from "./assets/goodImage.png";
+import backgroundImage from "./assets/bg-image.png";
 
 function App() {
   const [loading, setLoading] = useState(true);

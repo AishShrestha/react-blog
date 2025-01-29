@@ -12,6 +12,7 @@ import Logo from "./Logo";
 import Postcard from "./Postcard";
 import Postform from "./Postform/PostForm";
 import LogoutBtn from "./Header/LogoutBtn";
+import Hero from "./hero";
 
 export {
   Header,
@@ -28,4 +29,5 @@ export {
   Postcard,
   Postform,
   LogoutBtn,
+  Hero,
 };

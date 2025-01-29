@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import databaseService from "../appwrite/database";
-import { Container, Postcard } from "../component/index";
+import { Container, Postcard, Hero } from "../component/index";
 
 function Home() {
   const [posts, setPost] = useState([]);
@@ -15,13 +15,15 @@ function Home() {
 
   if (posts.length === 0) {
     return (
-      <div className="w-full text-center h-screen">
-        <Container>
-          <div className="flex flex-wrap">
-            <div className="p-2 w-full"></div>
-          </div>
-        </Container>
+      // <div className="w-full text-center h-screen">
+      //   <Container>
+      // <div className="flex flex-wrap">
+      <div className="w-full">
+        <Hero />
       </div>
+      //   </div>
+      // </Container>
+      // </div>
     );
   }
 
