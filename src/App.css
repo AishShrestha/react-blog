@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap");
+import backgroundImage from "./assets/background.jpg";
+body {
+  margin: 0;
+  background: #262322;
+  height: 100vh;
+  background-image: url(${backgroundImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}

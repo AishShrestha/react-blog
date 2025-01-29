@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import authService from "../appwrite/auth";
 import { useDispatch } from "react-redux";
 import { login as authLogin } from "../feature/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Input, Button, Logo } from "./index";
 import { useForm } from "react-hook-form";
 
@@ -10,24 +10,35 @@ function Login() {
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const login = async (data) => {
     setError("");
     try {
       const session = await authService.login(data);
+      console.log("Login session:", session);
+
       if (session) {
         const userData = await authService.getCurrentUser();
-        if (userData) dispatch(authLogin(userData));
-        navigate("/");
+        console.log("User data:", userData);
+
+        if (userData) {
+          dispatch(authLogin({ userData }));
+          navigate("/");
+        }
       }
     } catch (error) {
-      setError(error);
+      console.error("Login error:", error);
+      setError(error.message || "An error occurred during login");
     }
   };
 
   return (
-    <div className="flex items-center justify-center w-full">
+    <div className="flex items-center justify-center min-h-screen w-full">
       <div
         className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}
       >
@@ -52,34 +63,46 @@ function Login() {
 
         <form onSubmit={handleSubmit(login)} className="mt-8">
           <div className="space-y-5">
-            <Input
-              label="Email"
-              type="email"
-              placeholder="Enter your email address"
-              {...register("email", {
-                required: true,
-                validate: {
-                  matchPattern: (value) =>
-                    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                    "Email address must be a valid address",
-                },
-              })}
-            />
-            <Input
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              {...register("password", {
-                required: true,
-                validate: {
-                  pattern: (value) =>
-                    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(
-                      value
-                    ) ||
-                    "Password must contain at least 8 characters, including UPPER/lowercase and numbers",
-                },
-              })}
-            />
+            <div>
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your email address"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Input
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters long",
+                  },
+                })}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
             <Button type="submit" className="w-full">
               Sign in
             </Button>

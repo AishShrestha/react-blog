@@ -1,70 +1,72 @@
+import config from "../config/config";
 import { Client, Account, ID } from "appwrite";
-import config from '../config/config'
 
-class AuthService{
-    client = new Client();
-    account;
+export class AuthService {
+  client = new Client();
+  account;
 
-    constructor(){
-        this.client.setEndpoint(config.appwrite.appWriteUrl)
-        .setProject(config.appwrite.appWriteProjecId);
-        console.log(config.appwrite.appWriteUrl);
+  constructor() {
+    console.log("Initializing with config:", {
+      url: config.appwrite.appwriteUrl,
+      projectId: config.appwrite.appwriteProjectId,
+    });
 
-        this.account = new Account(this.client);    
+    this.client
+      .setEndpoint(config.appwrite.appwriteUrl)
+      .setProject(config.appwrite.appwriteProjectId);
+    this.account = new Account(this.client);
+  }
+
+  async createAccount({ email, password, name }) {
+    try {
+      console.log(
+        "Creating account with project ID:",
+        config.appwrite.appwriteProjectId
+      );
+      const userAccount = await this.account.create(
+        ID.unique(),
+        email,
+        password,
+        name
+      );
+      if (userAccount) {
+        return this.login({ email, password });
+      } else {
+        return userAccount;
+      }
+    } catch (error) {
+      console.log("Appwrite service :: createAccount :: error", error);
+      throw error;
     }
+  }
 
-    async createAccount({email,password,user}){
-        try{  
-
-         const userAccount = await this.account.create(ID.unique(),email,password,user);
-
-         if(userAccount){
-            return this.login({email,password});
-         }else{
-            return userAccount;
-         }
-
-        }catch(err){
-            console.log("Error in creating account :: ",err);
-        }
+  async login({ email, password }) {
+    try {
+      return await this.account.createEmailPasswordSession(email, password);
+    } catch (error) {
+      console.log("Appwrite service :: login :: error", error);
+      throw error;
     }
-    
-    async login({email,password}){
-        try{
-            return await this.account.createEmailPasswordSession(email,password);
-        }catch(err){
-            console.log("Error in login :: ",err);
+  }
 
-        }
+  async getCurrentUser() {
+    try {
+      return await this.account.get();
+    } catch (error) {
+      console.log("Appwrite service :: getCurrentUser :: error", error);
+      return null;
     }
+  }
 
-
-
-    async getCurrentUser() {
-        try {
-            return await this.account.get();
-        } catch (error) {
-            console.log("Appwrite serive :: getCurrentUser :: error", error);
-        }
-
-        return null;
+  async logout() {
+    try {
+      return await this.account.deleteSessions();
+    } catch (error) {
+      console.log("Appwrite service :: logout :: error", error);
+      throw error;
     }
-
-
-    async logout(){
-        try{
-            return await this.account.deleteSession();
-        }catch(err){
-            console.log("Error in logout :: ",err);
-        }
-    }
-
-
-
+  }
 }
 
 const authService = new AuthService();
- export default authService;
-
-
-
+export default authService;

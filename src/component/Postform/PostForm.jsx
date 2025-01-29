@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import fileService from "../../appwrite/file";
 import databaseService from "../../appwrite/database";
-import { Input, Select } from "../index";
+import { Input, Select, Button, RTE } from "../index";
+
 
 function PostForm({ post }) {
   const { register, handleSubmit, watch, setValue, control, getValues } =
@@ -21,37 +22,55 @@ function PostForm({ post }) {
   const userData = useSelector((state) => state.auth.userData);
 
   const submit = async (data) => {
-    if (post) {
-      const file = data.image[0] ? fileService.uploadFile(data.image[0]) : null;
+    try {
+      if (post) {
+        let file = null;
+        if (data.image?.[0]) {
+          file = await file
+          Service.uploadFile(data.image[0]);
+        }
 
-      if (file) {
-        fileService.deleteFile(post.featuredImage);
-      }
-      const dbPost = await databaseService.updatePost(post.$id, {
-        ...data,
-        featuredImage: file ? file.id : undefined,
-      });
-      if (dbPost) {
-        navigate(`/post/${dbPost.$id}`);
-      }
-    } else {
-      const file = data.image[0] ? fileService.uploadFile(data.image[0]) : null;
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId;
+        if (file && post.featuredImage) {
+          await fileService.deleteFile(post.featuredImage);
+        }
+
+        const dbPost = await databaseService.updatePost(post.$id, {
+          ...data,
+          featuredImage: file ? file.$id : post.featuredImage,
+        });
+
+        if (dbPost) {
+          navigate(`/post/${dbPost.$id}`);
+        }
+      } else {
+        // Handle the case where no image is uploaded
+        if (!data.image?.[0]) {
+          throw new Error("Featured image is required");
+        }
+
+        const file = await fileService.uploadFile(data.image[0]);
+        if (!file) {
+          throw new Error("Failed to upload image");
+        }
+
         const dbPost = await databaseService.createPost({
           ...data,
-          userId: userData.$id,
+          featuredImage: file.$id,
+          userId: userData.$id, // Add the userId to the post data
         });
 
         if (dbPost) {
           navigate(`/post/${dbPost.$id}`);
         }
       }
+    } catch (error) {
+      console.error("Error submitting post:", error);
+      alert(error.message || "Error submitting post");
     }
   };
+
   const slugTransform = useCallback((value) => {
-    if (value && typeof value == "string") {
+    if (value && typeof value === "string") {
       return value
         .trim()
         .toLowerCase()
@@ -71,16 +90,22 @@ function PostForm({ post }) {
     return () => subscription.unsubscribe();
   }, [watch, slugTransform, setValue]);
 
+  // Prevent form submission if user is not logged in
+  useEffect(() => {
+    if (!userData) {
+      navigate("/login");
+    }
+  }, [userData, navigate]);
+
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
       <div className="w-2/3 px-2">
         <Input
-          label="Title "
+          label="Title :"
           placeholder="Title"
           className="mb-4"
           {...register("title", { required: true })}
         />
-
         <Input
           label="Slug :"
           placeholder="Slug"
@@ -101,13 +126,18 @@ function PostForm({ post }) {
       </div>
       <div className="w-1/3 px-2">
         <Input
-          label="Featured Image :"
+          label="Featured Image : *"
           type="file"
           className="mb-4"
           accept="image/png, image/jpg, image/jpeg, image/gif"
-          {...register("image", { required: !post })}
+          {...register("image", {
+            required: {
+              value: !post,
+              message: "Featured image is required for new posts",
+            },
+          })}
         />
-        {post && (
+        {post?.featuredImage && (
           <div className="w-full mb-4">
             <img
               src={fileService.getFilePreview(post.featuredImage)}
@@ -118,7 +148,7 @@ function PostForm({ post }) {
         )}
         <Select
           options={["active", "inactive"]}
-          label="Status"
+          label="Status :"
           className="mb-4"
           {...register("status", { required: true })}
         />

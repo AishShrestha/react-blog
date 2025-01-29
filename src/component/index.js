@@ -11,6 +11,7 @@ import Login from "./Login";
 import Logo from "./Logo";
 import Postcard from "./Postcard";
 import Postform from "./Postform/PostForm";
+import LogoutBtn from "./Header/LogoutBtn";
 
 export {
   Header,
@@ -26,4 +27,5 @@ export {
   Logo,
   Postcard,
   Postform,
+  LogoutBtn,
 };

@@ -5,9 +5,10 @@ import authService from "../appwrite/auth";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Button, Input, Logo } from "./index";
-const { register, handleSubmit } = useForm();
+import { useForm } from "react-hook-form";
 
 function Signup() {
+  const { register, handleSubmit } = useForm();
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function Signup() {
       const userData = await authService.createAccount(data);
       if (userData) {
         const userData = await authService.getCurrentUser();
+        console.log("userdata:", userData);
         dispatch(login({ userData }));
         navigate("/");
       }
@@ -78,7 +80,11 @@ function Signup() {
               required: true,
             })}
           />
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            onSubmit={handleSubmit(create)}
+          >
             Create Account
           </Button>
         </div>
