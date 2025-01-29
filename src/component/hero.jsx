@@ -1,7 +1,7 @@
 // component/Hero.jsx
 import { Link } from "react-router-dom";
 import heroImage from "../assets/hero.png";
-import { Container } from "../component/index";
+import { Container, Button } from "../component/index";
 
 export default function Hero() {
   return (
@@ -19,11 +19,11 @@ export default function Hero() {
               expertise, our platform empowers you to create, connect, and
               inspire.
             </p>
-            <Link
-              to="/signup"
-              className="inline-block bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 h transition"
-            >
-              Start Blogging Today!
+            <Link to="/signup">
+              <Button
+                children={"Start Blogging Today!"}
+                className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 h transition"
+              />
             </Link>
           </div>
 

@@ -2,9 +2,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { Container } from "../index";
-import Logo from "../Logo";
-import { LogoutBtn } from "../index";
+import { Container, Logo, LogoutBtn } from "../index";
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status);
@@ -44,11 +42,7 @@ function Header() {
         <nav className="flex">
           <div className="mr-4">
             <Link to="/">
-              <img
-                src="https://cdn.pixabay.com/photo/2017/02/25/23/50/animal-2099057_1280.png"
-                alt="Logo"
-                style={{ width: "50px", height: "30px" }}
-              />
+              <Logo />
             </Link>
           </div>
           <ul className="flex ml-auto text-xl text-white">
